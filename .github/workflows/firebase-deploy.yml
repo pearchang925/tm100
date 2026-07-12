@@ -1,0 +1,28 @@
+name: Deploy to Firebase Hosting
+on:
+  push:
+    branches:
+      - main # Change this to 'master' if your default branch uses that name
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # --- OPTIONAL BUILD STEP ---
+      # If you use a framework like React, Vite, Vue, or Next.js, uncomment the lines below:
+      # - name: Install Dependencies and Build
+      #   run: |
+      #     npm ci
+      #     npm run build
+      # ---------------------------
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: trailman100-membersip-system # Replace with your actual Firebase Project ID
+          channelId: live
