@@ -1,197 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Member Dashboard - Trailman100</title>
-  <style>
-    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background-color: #f5f5f5; }
-    .container { border: 1px solid #ddd; padding: 30px; border-radius: 8px; width: 340px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .hidden { display: none; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-    .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    .read-only-field { background-color: #e9ecef; color: #495057; cursor: not-allowed; }
-    button { width: 100%; padding: 10px; background-color: #0052cc; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 10px; }
-    button:hover { background-color: #0043a4; }
-    .secondary-btn { background-color: #6c757d; }
-    .secondary-btn:hover { background-color: #5a6268; }
-    .status-msg { margin-top: 15px; text-align: center; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Hosting Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ffca28; /* Firebase Yellow */
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #333;
+            font-size: 1.1rem;
+        }
+        .status {
+            display: inline-block;
+            background-color: #4caf50; /* Green for success */
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>🚀 Firebase Hosting Works!</h1>
+        <p>This page was successfully deployed from GitHub Actions.</p>
+        <div class="status">✅ Deployment Successful</div>
+        <p class="timestamp">Current Time: <span id="time"></span></p>
+    </div>
 
-  <!-- 1. Authentication Section -->
-  <div id="auth-section" class="container">
-    <h2>Member Login</h2>
-    <form id="login-form">
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" required>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" required>
-      </div>
-      <button type="submit">Log In</button>
-    </form>
-    <button id="forgot-password-btn" class="secondary-btn">Forgot Password?</button>
-    <p id="auth-message" class="status-msg"></p>
-  </div>
-
-  <!-- 2. Member Dashboard Section -->
-  <div id="dashboard-section" class="container hidden">
-    <h2>My Profile</h2>
-    <form id="profile-form">
-      <!-- Read-Only Fields -->
-      <div class="form-group">
-        <label>TM100 No (Read-Only)</label>
-        <input type="text" id="tm100-no" class="read-only-field" readonly>
-      </div>
-      <div class="form-group">
-        <label>AGAM No (Read-Only)</label>
-        <input type="text" id="agam-no" class="read-only-field" readonly>
-      </div>
-      <!-- Editable Fields -->
-      <div class="form-group">
-        <label for="display-name">Display Name</label>
-        <input type="text" id="display-name" required>
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="text" id="phone">
-      </div>
-      <button type="submit">Update Details</button>
-    </form>
-    <button id="logout-btn" class="secondary-btn">Log Out</button>
-    <p id="dashboard-message" class="status-msg"></p>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyA_XnffybaryptukW63qojheCXy4terHqM",
-  authDomain: "trailman100-membersip-system.firebaseapp.com",
-  projectId: "trailman100-membersip-system",
-  storageBucket: "trailman100-membersip-system.firebasestorage.app",
-  messagingSenderId: "678783149009",
-  appId: "1:678783149009:web:adcd7ebef242aed5d4b6f0"
-};
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // DOM Elements
-    const authSection = document.getElementById("auth-section");
-    const dashboardSection = document.getElementById("dashboard-section");
-    const loginForm = document.getElementById("login-form");
-    const profileForm = document.getElementById("profile-form");
-    const authMsg = document.getElementById("auth-message");
-    const dbMsg = document.getElementById("dashboard-message");
-
-    // Monitor Auth State
-    onAuthStateChanged(auth, async (user) => {
-      authMsg.textContent = "";
-      dbMsg.textContent = "";
-      if (user) {
-        authSection.classList.add("hidden");
-        dashboardSection.classList.remove("hidden");
-        await loadMemberProfile(user.uid);
-      } else {
-        authSection.classList.remove("hidden");
-        dashboardSection.classList.add("hidden");
-      }
-    });
-
-    // Login Action
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      authMsg.textContent = "";
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        authMsg.style.color = "red";
-        authMsg.textContent = `Login failed: ${error.message}`;
-      }
-    });
-
-    // Forgot Password Action
-    document.getElementById("forgot-password-btn").addEventListener("click", async () => {
-      authMsg.textContent = "";
-      const email = document.getElementById("email").value;
-
-      if (!email) {
-        authMsg.style.color = "red";
-        authMsg.textContent = "Please type your email address first.";
-        return;
-      }
-
-      try {
-        await sendPasswordResetEmail(auth, email);
-        authMsg.style.color = "green";
-        authMsg.textContent = "Password reset email successfully sent!";
-      } catch (error) {
-        authMsg.style.color = "red";
-        authMsg.textContent = `Error: ${error.message}`;
-      }
-    });
-
-    // Load Member Profile Doc from Firestore
-    async function loadMemberProfile(uid) {
-      try {
-        const userDocRef = doc(db, "users", uid);
-        const docSnap = await getDoc(userDocRef);
-
-        if (docSnap.exists()) {
-          const profile = docSnap.data();
-          // Display locked database fields
-          document.getElementById("tm100-no").value = profile.TM100_No || "Not Assigned";
-          document.getElementById("agam-no").value = profile.AGAM_No || "Not Assigned";
-          // Display editable database fields
-          document.getElementById("display-name").value = profile.displayName || "";
-          document.getElementById("phone").value = profile.phone || "";
-        } else {
-          dbMsg.style.color = "orange";
-          dbMsg.textContent = "Profile document not found in database.";
-        }
-      } catch (error) {
-        dbMsg.style.color = "red";
-        dbMsg.textContent = `Error loading profile: ${error.message}`;
-      }
-    }
-
-    // Update Editable Fields in Firestore
-    profileForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      dbMsg.textContent = "";
-      const user = auth.currentUser;
-      if (!user) return;
-
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        // Explicitly update only displayName and phone, leaving TM100_No & AGAM_No untouched
-        await updateDoc(userDocRef, {
-          displayName: document.getElementById("display-name").value,
-          phone: document.getElementById("phone").value
-        });
-        dbMsg.style.color = "green";
-        dbMsg.textContent = "Profile successfully updated!";
-      } catch (error) {
-        dbMsg.style.color = "red";
-        dbMsg.textContent = `Failed to update: ${error.message}`;
-      }
-    });
-
-    // Logout Action
-    document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
-  </script>
+    <script>
+        // Display current time to ensure JS is loading correctly
+        document.getElementById('time').textContent = new Date().toLocaleString();
+    </script>
 </body>
 </html>
