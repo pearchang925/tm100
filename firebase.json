@@ -1,6 +1,3 @@
-npm install -g firebase-tools
-firebase login
-firebase init hosting
 {
   "hosting": {
     "public": "dist",  // Change to your build output folder (e.g., "build", "public")
