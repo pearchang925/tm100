@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 40px; }
+    .dashboard-card { background: white; padding: 30px; border-radius: 8px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h2 { border-bottom: 2px solid #eaeaea; padding-bottom: 10px; }
+    .profile-info { margin: 20px 0; font-size: 16px; line-height: 1.6; }
+    .profile-info span { font-weight: bold; }
+    button { background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button:hover { background-color: #bd2130; }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-card">
+    <h2>Member Dashboard</h2>
+    <div id="loading">Verifying session and loading profile...</div>
+    
+    <div id="profile" style="display: none;">
+      <div class="profile-info">
+        <p><span>Member Name:</span> <span id="memberName">Loading...</span></p>
+        <p><span>Email:</span> <span id="memberEmail">Loading...</span></p>
+        <p><span>Membership Level:</span> <span id="memberLevel">Loading...</span></p>
+      </div>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY", // Replace with your Web API Key from the Firebase Console
+      authDomain: "trailman100-membersip-system.firebaseapp.com",
+      projectId: "trailman100-membersip-system"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Actively monitor the user session
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // Kick unauthenticated traffic back to login
+        window.location.href = 'index.html';
+      } else {
+        try {
+          // Query Firestore using the authenticated user's UID
+          const docRef = doc(db, "members", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('profile').style.display = 'block';
+          document.getElementById('memberEmail').innerText = user.email;
+
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('memberName').innerText = data.fullName || 'No name provided';
+            document.getElementById('memberLevel').innerText = data.membershipLevel || 'Standard';
+          } else {
+            document.getElementById('memberName').innerText = 'No profile found';
+            document.getElementById('memberLevel').innerText = 'N/A';
+          }
+        } catch (err) {
+          console.error("Error grabbing Firestore profile document: ", err);
+        }
+      }
+    });
+
+    // Sign out functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      });
+    });
+  </script>
+</body>
+</html>
