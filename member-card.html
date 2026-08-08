@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trailman100 - My Card</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <nav class="bg-blue-800 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold">My Membership Card</h1>
+      <a href="dashboard.html" class="hover:underline">Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="max-w-md mx-auto px-4 py-10 flex flex-col items-center">
+    <!-- Visual card replica in HTML/CSS -->
+    <div id="visualCard" class="w-full max-w-sm h-56 bg-gradient-to-br from-blue-900 to-indigo-800 rounded-2xl shadow-xl p-6 text-white flex flex-col justify-between mb-8">
+      <div>
+        <h2 class="text-2xl font-black tracking-wider">TRAILMAN100</h2>
+        <span class="text-xs text-blue-300 font-semibold tracking-widest block">OFFICIAL MEMBER</span>
+      </div>
+      <div>
+        <p id="cardName" class="text-lg font-bold">--</p>
+        <div class="flex justify-between items-end mt-2">
+          <div>
+            <p class="text-[10px] text-blue-300 uppercase font-semibold">Member ID</p>
+            <p id="cardId" class="font-mono text-sm">--</p>
+          </div>
+          <div>
+            <p class="text-[10px] text-blue-300 uppercase font-semibold">Join Date</p>
+            <p id="cardDate" class="text-sm">--</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="downloadBtn" class="w-full max-w-sm py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-200">
+      Download Card (PNG)
+    </button>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyA_XnffybaryptukW63qojheCXy4terHqM",
+  authDomain: "trailman100-membersip-system.firebaseapp.com",
+  projectId: "trailman100-membersip-system",
+  storageBucket: "trailman100-membersip-system.firebasestorage.app",
+  messagingSenderId: "678783149009",
+  appId: "1:678783149009:web:adcd7ebef242aed5d4b6f0"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let profileName = "No Name";
+    let profileId = "N/A";
+    let profileDate = "N/A";
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'index.html'; }
+      else {
+        const docRef = doc(db, "members", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          profileName = data.fullName || 'No Name Provided';
+          profileId = data.memberId || 'N/A';
+          profileDate = data.joinedDate || 'N/A';
+
+          document.getElementById('cardName').innerText = profileName;
+          document.getElementById('cardId').innerText = profileId;
+          document.getElementById('cardDate').innerText = profileDate;
+        }
+      }
+    });
+
+    // Native drawing logic on Hidden HTML Canvas
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 350;
+      const ctx = canvas.getContext('2d');
+
+      // 1. Background Gradient
+      const grad = ctx.createLinearGradient(0, 0, 600, 350);
+      grad.addColorStop(0, '#1e3a8a');
+      grad.addColorStop(1, '#3730a3');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 600, 350);
+
+      // 2. Card header
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 30px sans-serif';
+      ctx.fillText('TRAILMAN100', 40, 65);
+      ctx.fillStyle = '#93c5fd';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText('OFFICIAL MEMBER CARD', 40, 90);
+
+      // 3. User Details
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 24px sans-serif';
+      ctx.fillText(profileName, 40, 190);
+
+      ctx.fillStyle = '#93c5fd';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('MEMBER ID', 40, 240);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 18px monospace';
+      ctx.fillText(profileId, 40, 265);
+
+      ctx.fillStyle = '#93c5fd';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('JOIN DATE', 420, 240);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(profileDate, 420, 265);
+
+      // 4. Trigger download
+      const link = document.createElement('a');
+      link.download = `trailman100_card_${profileId}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
+ 
