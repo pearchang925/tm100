@@ -57,10 +57,13 @@
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "trailman100-membersip-system.firebaseapp.com",
-      projectId: "trailman100-membersip-system"
-    };
+  apiKey: "AIzaSyA_XnffybaryptukW63qojheCXy4terHqM",
+  authDomain: "trailman100-membersip-system.firebaseapp.com",
+  projectId: "trailman100-membersip-system",
+  storageBucket: "trailman100-membersip-system.firebasestorage.app",
+  messagingSenderId: "678783149009",
+  appId: "1:678783149009:web:adcd7ebef242aed5d4b6f0"
+};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -91,55 +94,6 @@
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
       signOut(auth).then(() => { window.location.href = 'index.html'; });
-    });
-  </script>
-</body>
-</html>
-
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY", // Replace with your Web API Key from the Firebase Console
-      authDomain: "trailman100-membersip-system.firebaseapp.com",
-      projectId: "trailman100-membersip-system"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Actively monitor the user session
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        // Kick unauthenticated traffic back to login
-        window.location.href = 'index.html';
-      } else {
-        try {
-          // Query Firestore using the authenticated user's UID
-          const docRef = doc(db, "members", user.uid);
-          const docSnap = await getDoc(docRef);
-
-          document.getElementById('loading').style.display = 'none';
-          document.getElementById('profile').style.display = 'block';
-          document.getElementById('memberEmail').innerText = user.email;
-
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('memberName').innerText = data.fullName || 'No name provided';
-            document.getElementById('memberLevel').innerText = data.membershipLevel || 'Standard';
-          } else {
-            document.getElementById('memberName').innerText = 'No profile found';
-            document.getElementById('memberLevel').innerText = 'N/A';
-          }
-        } catch (err) {
-          console.error("Error grabbing Firestore profile document: ", err);
-        }
-      }
-    });
-
-    // Sign out functionality
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      signOut(auth).then(() => {
-        window.location.href = 'index.html';
-      });
     });
   </script>
 </body>
