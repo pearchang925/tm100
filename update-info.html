@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trailman100 - Update Info</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <nav class="bg-blue-800 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold">Update Profile</h1>
+      <a href="dashboard.html" class="hover:underline">Back to Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="max-w-md mx-auto px-4 py-10">
+    <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Edit Profile Fields</h2>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Full Name</label>
+        <input type="text" id="fullName" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Member ID</label>
+        <input type="text" id="memberId" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1 bg-gray-100" readonly>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Emergency Phone</label>
+        <input type="text" id="emergencyPhone" class="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1">
+      </div>
+      <button id="saveBtn" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg">Save Profile Changes</button>
+      <p id="alertMsg" class="text-center text-sm font-semibold mt-4"></p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyA_XnffybaryptukW63qojheCXy4terHqM",
+  authDomain: "trailman100-membersip-system.firebaseapp.com",
+  projectId: "trailman100-membersip-system",
+  storageBucket: "trailman100-membersip-system.firebasestorage.app",
+  messagingSenderId: "678783149009",
+  appId: "1:678783149009:web:adcd7ebef242aed5d4b6f0"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUserUid;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'index.html'; }
+      else {
+        currentUserUid = user.uid;
+        const docRef = doc(db, "members", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById('fullName').value = data.fullName || '';
+          document.getElementById('memberId').value = data.memberId || '';
+          document.getElementById('emergencyPhone').value = data.emergencyPhone || '';
+        }
+      }
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const alertMsg = document.getElementById('alertMsg');
+      alertMsg.innerText = "";
+      try {
+        const docRef = doc(db, "members", currentUserUid);
+        await updateDoc(docRef, {
+          fullName: document.getElementById('fullName').value,
+          emergencyPhone: document.getElementById('emergencyPhone').value
+        });
+        alertMsg.className = "text-center text-sm font-semibold mt-4 text-green-600";
+        alertMsg.innerText = "Information successfully saved!";
+      } catch (err) {
+        alertMsg.className = "text-center text-sm font-semibold mt-4 text-red-600";
+        alertMsg.innerText = err.message;
+      }
+    });
+  </script>
+</body>
+</html>
+ 
