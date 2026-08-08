@@ -2,97 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Member Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trailman100 Membership Portal</title>
   <style>
-    .login-container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; }
-    .form-group input { width: 100%; padding: 8px; box-sizing: border-box; }
-    button { width: 100%; padding: 10px; margin-top: 10px; cursor: pointer; }
-    .links { margin-top: 15px; text-align: center; }
-    .links a { color: #007bff; text-decoration: none; cursor: pointer; }
+    body { font-family: sans-serif; display: flex; justify-content: center; margin: 40px; }
+    .container { max-width: 600px; width: 100%; }
+    .hidden { display: none; }
+    input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+    button { padding: 10px 15px; background: #0056b3; color: white; border: none; cursor: pointer; }
+    button:hover { background: #004085; }
+    canvas { width: 100%; border: 1px dashed #ccc; margin-top: 15px; }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Trailman100 Portal</h1>
 
-<div class="login-container">
-  <h2>Member Login</h2>
-  <div class="form-group">
-    <label for="email">Email Address</label>
-    <input type="email" id="email" required>
+    <!-- Authentication Screen -->
+    <div id="auth-section">
+      <h3>Member Login</h3>
+      <input type="email" id="email" placeholder="Email Address">
+      <input type="password" id="password" placeholder="Password">
+      <button id="btn-login">Login</button>
+      <button id="btn-reset" style="background:#6c757d;">Reset Password</button>
+    </div>
+
+    <!-- Member Portal Screen -->
+    <div id="portal-section" class="hidden">
+      <h3>Welcome, <span id="member-display-name">Member</span>!</h3>
+      <button id="btn-logout" style="background:#dc3545;">Logout</button>
+      
+      <h4>Personal Information</h4>
+      <label>Full Name:</label>
+      <input type="text" id="profile-name" placeholder="John Doe">
+      
+      <label>Membership Number:</label>
+      <input type="text" id="profile-number" readonly>
+      
+      <button id="btn-update">Update Info & Card</button>
+
+      <h4>Your Membership Card</h4>
+      <canvas id="card-canvas" width="600" height="350"></canvas>
+      <br><br>
+      <button id="btn-download" style="background:#28a745;">Download Card Image</button>
+    </div>
   </div>
-  <div class="form-group">
-    <label for="password">Password</label>
-    <input type="password" id="password" required>
-  </div>
-  
-  <button id="loginBtn">Login</button>
-  
-  <div class="links">
-    <a id="forgotPasswordBtn">Forgot Password?</a>
-  </div>
-  <p id="message" style="color: red; text-align: center;"></p>
-</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyA_XnffybaryptukW63qojheCXy4terHqM",
-  authDomain: "trailman100-membersip-system.firebaseapp.com",
-  projectId: "trailman100-membersip-system",
-  storageBucket: "trailman100-membersip-system.firebasestorage.app",
-  messagingSenderId: "678783149009",
-  appId: "1:678783149009:web:adcd7ebef242aed5d4b6f0"
-};
-
-  // Initialize Firebase and Auth
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const messageText = document.getElementById('message');
-
-  // Handle Login
-  document.getElementById('loginBtn').addEventListener('click', () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        messageText.style.color = "green";
-        messageText.innerText = "Login successful! Welcome, " + userCredential.user.email;
-        // Redirect to your member dashboard here
-      })
-      .catch((error) => {
-        messageText.style.color = "red";
-        messageText.innerText = `Error: ${error.message}`;
-      });
-  });
-
-  // Handle Password Reset
-  document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
-    const email = emailInput.value;
-    if (!email) {
-      messageText.style.color = "red";
-      messageText.innerText = "Please enter your email address first.";
-      return;
-    }
-
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
-        messageText.style.color = "green";
-        messageText.innerText = "Password reset email sent! Check your inbox.";
-      })
-      .catch((error) => {
-        messageText.style.color = "red";
-        messageText.innerText = `Error: ${error.message}`;
-      });
-  });
-</script>
-
+  <script type="module" src="app.js"></script>
 </body>
 </html>
