@@ -3,37 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trailman100 Membership Portal</title>
-  <style>
-    body { font-family: sans-serif; display: flex; justify-content: center; margin: 40px; }
-    .container { max-width: 600px; width: 100%; }
-    .hidden { display: none; }
-    input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
-    button { padding: 10px 15px; background: #0056b3; color: white; border: none; cursor: pointer; }
-    button:hover { background: #004085; }
-    canvas { width: 100%; border: 1px dashed #ccc; margin-top: 15px; }
-  </style>
+  <title>Trailman100 - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>Trailman100 Portal</h1>
-
-    <!-- Authentication Screen -->
-    <div id="auth-section">
-      <h3>Member Login</h3>
-      <input type="email" id="email" placeholder="Email Address">
-      <input type="password" id="password" placeholder="Password">
-      <button id="btn-login">Login</button>
-      <button id="btn-reset" style="background:#6c757d;">Reset Password</button>
-    </div>
-
-    <!-- Member Portal Screen -->
-    <div id="portal-section" class="hidden">
-      <h3>Welcome, <span id="member-display-name">Member</span>!</h3>
-      <button id="btn-logout" style="background:#dc3545;">Logout</button>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Trailman100 Login</h2>
+    
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <input type="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+      </div>
       
-      <h4>Personal Information</h4>
-      <label>Full Name:</label>
+      <button id="loginBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200">Sign In</button>
+      
+      <div class="text-center mt-4">
+        <button id="forgotPasswordBtn" class="text-sm text-blue-600 hover:underline">Forgot Password?</button>
+      </div>
+      
+      <p id="message" class="text-center text-sm font-medium mt-4"></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyA_XnffybaryptukW63qojheCXy4terHqM",
+  authDomain: "trailman100-membersip-system.firebaseapp.com",
+  projectId: "trailman100-membersip-system",
+  storageBucket: "trailman100-membersip-system.firebasestorage.app",
+  messagingSenderId: "678783149009",
+  appId: "1:678783149009:web:adcd7ebef242aed5d4b6f
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const message = document.getElementById('message');
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      message.innerText = "";
+      signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(() => { window.location.href = 'dashboard.html'; })
+        .catch((err) => {
+          message.className = "text-center text-sm font-medium mt-4 text-red-600";
+          message.innerText = err.message;
+        });
+    });
+
+    document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
+      message.innerText = "";
+      if (!emailInput.value) {
+        message.className = "text-center text-sm font-medium mt-4 text-red-600";
+        message.innerText = "Please provide your email address to reset password.";
+        return;
+      }
+      sendPasswordResetEmail(auth, emailInput.value)
+        .then(() => {
+          message.className = "text-center text-sm font-medium mt-4 text-green-600";
+          message.innerText = "Password reset instructions sent to your inbox.";
+        })
+        .catch((err) => {
+          message.className = "text-center text-sm font-medium mt-4 text-red-600";
+          message.innerText = err.message;
+        });
+    });
+  </script>
+</body>
+</html>
       <input type="text" id="profile-name" placeholder="John Doe">
       
       <label>Membership Number:</label>
