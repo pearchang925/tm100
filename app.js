@@ -4,12 +4,12 @@ import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 // Your Firebase Config configuration (Spark no-cost plan)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY", 
+  apiKey: "AIzaSyA_XnffybaryptukW63qojheCXy4terHqM",
   authDomain: "trailman100-membersip-system.firebaseapp.com",
   projectId: "trailman100-membersip-system",
-  storageBucket: "trailman100-membersip-system.appspot.com",
+  storageBucket: "trailman100-membersip-system.firebasestorage.app",
   messagingSenderId: "678783149009",
-  appId: "YOUR_APP_ID"
+  appId: "1:678783149009:web:adcd7ebef242aed5d4b6f0"
 };
 
 const app = initializeApp(firebaseConfig);
